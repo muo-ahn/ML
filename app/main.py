@@ -28,9 +28,25 @@ def predict(model):
 
 app = FastAPI()
 
+# Global variable to store the model
+model = None
+
+@app.on_event("startup")
+async def startup_event():
+    global model
+    model = init()
+    print("Model loaded at startup")
+
 @app.get("/")
 def read_root():
     return {"message": "Welcome to my FastAPI project!"}
 
-app.include_router(items.router)
+@app.get("/predict")
+def get_prediction():
+    global model
+    if model is None:
+        return {"error": "Model not loaded"}
+    predict(model)
+    return {"message": "Prediction made"}
 
+app.include_router(items.router)
