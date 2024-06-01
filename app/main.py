@@ -1,3 +1,5 @@
+from fastapi import FastAPI
+from app.routers import items
 from transformers import TFT5ForConditionalGeneration, T5Tokenizer
 
 model_directory = "ML/summarization_eng_t5"
@@ -24,6 +26,11 @@ def predict(model):
 
     print("Generated Summary:", output_text)
 
-if __name__ == '__main__':
-    model = init()
-    predict(model)
+app = FastAPI()
+
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to my FastAPI project!"}
+
+app.include_router(items.router)
+
