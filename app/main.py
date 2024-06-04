@@ -1,52 +1,38 @@
+import logging
 from fastapi import FastAPI
-from app.routers import items
-from transformers import TFT5ForConditionalGeneration, T5Tokenizer
+from fastapi.middleware.cors import CORSMiddleware
+from app.routers import predict
+from app.dependencies import startup_event
 
-model_directory = "ML/summarization_eng_t5"
-
-def init():
-    # Load the model from the directory
-    return TFT5ForConditionalGeneration.from_pretrained(model_directory)
-
-def predict(model):
-    # Load the tokenizer directly from the model checkpoint
-    tokenizer = T5Tokenizer.from_pretrained("t5-small")
-
-    # Define your input text
-    text = "summarize: The Inflation Reduction Act lowers prescription drug costs, health care costs, and energy costs. It's the most aggressive action on tackling the climate crisis in American history, which will lift up American workers and create good-paying, union jobs across the country. It'll lower the deficit and ask the ultra-wealthy and corporations to pay their fair share. And no one making under $400,000 per year will pay a penny more in taxes."
-
-    # Tokenize the input text
-    inputs = tokenizer(text, return_tensors="tf").input_ids
-
-    # Generate output text
-    outputs = model.generate(inputs, max_new_tokens=100, do_sample=False)
-
-    # Decode the output tokens into text
-    output_text = tokenizer.decode(outputs[0], skip_special_tokens=True)
-
-    print("Generated Summary:", output_text)
+# Set up logging
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
-# Global variable to store the model
-model = None
+# Configure CORS
+origins = [
+    "http://localhost:8080",  # Your client URL
+    "http://127.0.0.1:8080",  # Also include localhost with IP
+    # Add other origins if needed
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.on_event("startup")
-async def startup_event():
-    global model
-    model = init()
-    print("Model loaded at startup")
+async def startup():
+    await startup_event()
+    logger.info("Startup event completed, model and tokenizer loaded")
 
 @app.get("/")
 def read_root():
+    logger.debug("Read root called")
     return {"message": "Welcome to my FastAPI project!"}
 
-@app.get("/predict")
-def get_prediction():
-    global model
-    if model is None:
-        return {"error": "Model not loaded"}
-    predict(model)
-    return {"message": "Prediction made"}
-
-app.include_router(items.router)
+app.include_router(predict.router)
