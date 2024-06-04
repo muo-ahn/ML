@@ -26,4 +26,3 @@ Start the render html file
 python -m http.server 8080
 ```
 =======
->>>>>>> a855ceb8b530cddf8cfd8ec45b8063678e9e64ce
