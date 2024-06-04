@@ -5,6 +5,8 @@ This is a hosting Summarization model on FastAPI.
 Goal
 - Web Crawling
 - Summarization
+    - Kor
+    - Eng
 
 ## Installation
 
