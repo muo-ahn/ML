@@ -9,9 +9,8 @@ Goal
 ## Installation
 
 Install dependencies:
-    ```sh
-    pip install -r requirements.txt
-    ```
+```sh
+pip install -r requirements.txt
 
 ## Running the application
 
