@@ -17,6 +17,11 @@
             height: 100px;
             margin-bottom: 20px;
         }
+        select {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
         button {
             padding: 10px 20px;
             font-size: 16px;
@@ -30,18 +35,30 @@
 <body>
     <h1>Text Summarization</h1>
     <textarea id="text-input" placeholder="Enter text to summarize..."></textarea>
+    <select id="language-select">
+        <option value="eng">English</option>
+        <option value="kor">Korean</option>
+        <!-- Add more language options as needed -->
+    </select>
     <button onclick="sendRequest()">Summarize</button>
     <div id="summary"></div>
 
     <script>
         async function sendRequest() {
             const text = document.getElementById('text-input').value;
+            const language = document.getElementById('language-select').value;
+
+            const requestData = {
+                language: language,
+                text: text
+            };
+
             const response = await fetch('http://127.0.0.1:8000/predict', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ text: text })
+                body: JSON.stringify(requestData)
             });
 
             const result = await response.json();

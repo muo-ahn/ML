@@ -25,4 +25,3 @@ Start the render html file
 ```sh
 python -m http.server 8080
 ```
-=======
