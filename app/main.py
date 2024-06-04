@@ -28,11 +28,9 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup():
     await startup_event()
-    logger.info("Startup event completed, model and tokenizer loaded")
 
 @app.get("/")
 def read_root():
-    logger.debug("Read root called")
     return {"message": "Welcome to my FastAPI project!"}
 
 app.include_router(predict.router)
